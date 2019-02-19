@@ -439,7 +439,7 @@ class UnaryOperator extends Operator {
 
 class NoncommutativeOperator extends Operator {
     apply(numA, numB) {
-        const value = this.applyValues(numA, numB)
+        const value = quantise(this.applyValues(numA, numB))
         return value === null ? null : {
             value,
             formula: this.applyFormulas(numA, numB),
@@ -455,7 +455,7 @@ class NoncommutativeOperator extends Operator {
 class CommutativeOperator extends Operator {
     apply(numA, numB) {
         return {
-            value: this.applyValues(numA, numB),
+            value: quantise(this.applyValues(numA, numB)),
             formula: this.applyFormulas(numA, numB),
             operator: this,
             count: numA.count + numB.count
@@ -490,7 +490,7 @@ const subtract = new NoncommutativeOperator({
 const divide = new NoncommutativeOperator({
     symbol: '÷',
     precedence: 2,
-    applyValues(numA, numB) { return numB.value ? quantise(numA.value / numB.value) : null },
+    applyValues(numA, numB) { return numB.value ? numA.value / numB.value : null },
     applyFormulas(numA, numB) { return bindLoose(this, numA) + '÷' + bindTight(this, numB) }
 })
 
@@ -499,7 +499,7 @@ const power = new NoncommutativeOperator({
     precedence: 3,
     applyValues(numA, numB) {
         const value = Math.pow(numA.value, numB.value)
-        return value < global.settings.valueLimit ? quantise(value) : null
+        return value < global.settings.valueLimit ? value : null
     },
     applyFormulas(numA, numB) { return bindTight(this, numA) + '^' + bindLoose(this, numB) }
 })
@@ -507,7 +507,7 @@ const power = new NoncommutativeOperator({
 const squareRoot = new UnaryOperator({
     symbol: '√',
     precedence: 4,
-    applyValue(numA) { return numA.value >= 0 ? quantise(Math.sqrt(numA.value)) : null },
+    applyValue(numA) { return numA.value >= 0 ? Math.sqrt(numA.value) : null },
     applyFormula(numA) { return '√' + bindLoose(this, numA) }
 })
 
