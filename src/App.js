@@ -73,7 +73,7 @@ export default class App extends Component {
   }
 
   createWorker() {
-    const worker = new Worker('worker.js')
+    const worker = new Worker('./worker.js', { type: 'module' }) // see worker-plugin
     worker.onmessage = e => {
       if (e.data.settings) {
         this.setState(state => ({

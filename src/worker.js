@@ -1,4 +1,7 @@
-importScripts('//cdnjs.cloudflare.com/ajax/libs/ramda/0.25.0/ramda.min.js')
+import flatten from 'ramda/src/flatten'
+import keys from 'ramda/src/keys'
+import map from 'ramda/src/map'
+import path from 'ramda/src/path'
 
 onmessage = function(e) {
   if (e.data.init) {
@@ -175,15 +178,14 @@ function buildInitialState() {
 
 function doRound(state) {
     const {lastMilestone, universe} = state
-    currentRound = lastMilestone.round + 1
-    const keys = R.keys(universe)
-    const keysCount = keys.length
+    const idList = keys(universe)
+    const idCount = idList.length
     const naturalsCount = getNaturals(universe).length
 
     if ( ! lastMilestone.stage) {
         const unaryResults = []
-        for (let i = 0; i < keysCount; ++i) {
-            unaryResults.push(...R.flatten(applyOperators(global.settings.unaryOperators)(universe[keys[i]])))
+        for (let i = 0; i < idCount; ++i) {
+            unaryResults.push(...flatten(applyOperators(global.settings.unaryOperators)(universe[idList[i]])))
         }
         addNumbers(universe, unaryResults)
         lastMilestone.stage = { unary: true }
@@ -196,23 +198,23 @@ function doRound(state) {
         let initial_j = lastMilestone.stage.binary ? lastMilestone.stage.binary.j : 0
         let i = initial_i
         initial_i = 0
-        for ( ; i < keysCount; ++i) {
+        for ( ; i < idCount; ++i) {
             const binaryResults = []
             let j = initial_j
             initial_j = 0
             for ( ; j <= i; ++j) {
-                binaryResults.push(...R.flatten(applyOperators(global.settings.binaryOperators)(universe[keys[i]], universe[keys[j]])))
+                binaryResults.push(...flatten(applyOperators(global.settings.binaryOperators)(universe[idList[i]], universe[idList[j]])))
             }
             addNumbers(universe, binaryResults)
-            lastMilestone.stage = {binary: {i, j, fraction: (i + 1) / keysCount}}
+            lastMilestone.stage = {binary: {i, j, fraction: (i + 1) / idCount}}
             heartbeat(state)
         }
         showMilestone(state)
     }
 
-    const newKeysCount = R.keys(universe).length
+    const newIdCount = keys(universe).length
     const newNaturalsCount = getNaturals(universe).length
-    if (newKeysCount === keysCount && newNaturalsCount === naturalsCount) {
+    if (newIdCount === idCount && newNaturalsCount === naturalsCount) {
         lastMilestone.stage = {done: true}
         throw 'done'
     }
@@ -289,7 +291,7 @@ function quantise(number) {
 function showMilestone(state) {
     const time = timestamp()
     const label = getLabel(state)
-    const naturals = R.map(R.path(['value']))(getNaturals(state.universe))
+    const naturals = map(path(['value']))(getNaturals(state.universe))
     const numberCount = Object.keys(state.universe).length
     console.log(`Milestone [${label}]`, naturals)
     console.log(time, label , 'Naturals', naturals.length, 'Total', numberCount)
