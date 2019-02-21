@@ -175,15 +175,18 @@ function buildInitialState() {
 
 function doRound(state) {
     const {lastMilestone, universe} = state
-    currentRound = lastMilestone.round + 1
-    const keys = R.keys(universe)
-    const keysCount = keys.length
-    const naturalsCount = getNaturals(universe).length
+    // Set base universe for calculations in this round (universe will grow but baseUniverse won't)
+    if (!state.baseUniverse) {
+        state.baseUniverse = Object.assign({}, universe)
+    }
+    const {baseUniverse} = state
+    const baseIdList = Object.keys(baseUniverse)
+    const baseIdCount = baseIdList.length
 
     if ( ! lastMilestone.stage) {
         const unaryResults = []
-        for (let i = 0; i < keysCount; ++i) {
-            unaryResults.push(...R.flatten(applyOperators(global.settings.unaryOperators)(universe[keys[i]])))
+        for (let i = 0; i < baseIdCount; ++i) {
+            unaryResults.push(...R.flatten(applyOperators(global.settings.unaryOperators)(baseUniverse[baseIdList[i]])))
         }
         addNumbers(universe, unaryResults)
         lastMilestone.stage = { unary: true }
@@ -196,23 +199,26 @@ function doRound(state) {
         let initial_j = lastMilestone.stage.binary ? lastMilestone.stage.binary.j : 0
         let i = initial_i
         initial_i = 0
-        for ( ; i < keysCount; ++i) {
+        for ( ; i < baseIdCount; ++i) {
             const binaryResults = []
             let j = initial_j
             initial_j = 0
             for ( ; j <= i; ++j) {
-                binaryResults.push(...R.flatten(applyOperators(global.settings.binaryOperators)(universe[keys[i]], universe[keys[j]])))
+                binaryResults.push(...R.flatten(applyOperators(global.settings.binaryOperators)(baseUniverse[baseIdList[i]], baseUniverse[baseIdList[j]])))
             }
             addNumbers(universe, binaryResults)
-            lastMilestone.stage = {binary: {i, j, fraction: (i + 1) / keysCount}}
+            lastMilestone.stage = {binary: {i, j, fraction: (i + 1) / baseIdCount}}
             heartbeat(state)
         }
         showMilestone(state)
     }
 
-    const newKeysCount = R.keys(universe).length
-    const newNaturalsCount = getNaturals(universe).length
-    if (newKeysCount === keysCount && newNaturalsCount === naturalsCount) {
+    // Finished the round: reset the base for next time
+    state.baseUniverse = null
+
+    const newIdCount = Object.keys(universe).length
+    if (newIdCount === baseIdCount) {
+        // No new numbers discovered
         lastMilestone.stage = {done: true}
         throw 'done'
     }
