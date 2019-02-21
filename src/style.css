@@ -7,4 +7,6 @@ body {
 .controls .btn {
     margin-right: 0.5em;
 }
-h2 { display: none; }
+.group {
+    margin: 1em 0;
+}
