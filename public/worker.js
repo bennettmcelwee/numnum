@@ -235,7 +235,7 @@ function applyOperators(operators) {
 
 
 function timestamp() {
-    return ((new Date().getTime() - global.state.startTimestamp) / 1000).toFixed(3)
+    return (new Date().getTime() - global.state.startTimestamp) / 1000
 }
 
 function makeId(num) {
