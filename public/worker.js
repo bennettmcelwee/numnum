@@ -162,6 +162,8 @@ function buildInitialState() {
         ])
     }
     if (global.settings.symbols.includes('.')) {
+        // NOTE: We don't add number like 4.4 etc because they can be obtained as e.g. 4 + .4
+        // assuming that + is allowed, which it may not be, but y'know, whatever.
         addNumbers(state.universe, [{
                 value: global.settings.digit/10,
                 formula: '.' + global.settings.digit,
@@ -169,6 +171,21 @@ function buildInitialState() {
                 count: 1
             }
         ])
+        if (global.settings.allowConcatenation) {
+            addNumbers(state.universe, [{
+                    value: global.settings.digit/10 + global.settings.digit/100,
+                    formula: '.' + global.settings.digit + global.settings.digit,
+                    operator: null,
+                    count: 2
+                },
+                {
+                    value: global.settings.digit/10 + global.settings.digit/100 + global.settings.digit/1000,
+                    formula: '.' + global.settings.digit + global.settings.digit + global.settings.digit,
+                    operator: null,
+                    count: 3
+                }
+            ])
+        }
     }
     return state
 }
