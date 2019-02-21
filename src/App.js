@@ -24,7 +24,7 @@ export default class App extends Component {
         maxDurationSeconds: 5,
       },
       snapshot: {
-        naturals: []
+        answers: []
       }
     }
     this.worker = this.createWorker()
@@ -88,14 +88,14 @@ export default class App extends Component {
       }
       if (e.data.snapshot) {
         // Update messages
-        if (e.data.snapshot.naturals && e.data.snapshot.naturals.length) {
+        if (e.data.snapshot.answers && e.data.snapshot.answers.length) {
           this.setState(state => {
-            const newNaturals = difference(e.data.snapshot.naturals || [], state.snapshot.naturals || [])
+            const newAnswers = difference(e.data.snapshot.answers || [], state.snapshot.answers || [])
             const newMessages = state.messages || []
-            if (newNaturals.length) {
-              newMessages.push("New:" + newNaturals)
+            if (newAnswers.length) {
+              newMessages.push("New:" + newAnswers)
             }
-            return newNaturals.length ? {
+            return newAnswers.length ? {
                 messages: newMessages
               } : {}
           })

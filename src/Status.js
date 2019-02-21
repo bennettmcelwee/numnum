@@ -15,7 +15,7 @@ export default ({ state }) => (
         <div>Elapsed time: {(state.snapshot.time || 0).toFixed(1)} seconds</div>
         <div>Current task: <strong>{state.snapshot.label}</strong></div>
         <div>Checked {state.snapshot.numberCount || 'no'} numbers</div>
-        <div>Found {state.snapshot.naturalsCount ? <b>{state.snapshot.naturalsCount}</b> : 'no'} numbers</div>
+        <div>Found {state.snapshot.answerCount ? <b>{state.snapshot.answerCount}</b> : 'no'} answers</div>
         {state.snapshot.formulaMap &&
             <div>
                 <h2>Results</h2>

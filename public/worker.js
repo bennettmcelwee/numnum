@@ -263,10 +263,14 @@ function makeId(num) {
 ///// Universe
 
 
-function getNaturals(universe) {
-    return Object.keys(universe)
-        .map(key => universe[key])
-        .filter(num => num.value === Math.trunc(num.value) && 0 < num.value)
+// An "answer" is a number that qualifies as an answer to the search, i.e. is a positive integer with the right count
+function getAnswers(universe) {
+    return Object.values(universe)
+        .filter(num =>
+            0 < num.value && // positive
+            num.value === Math.trunc(num.value) // integer
+            // TODO optionally check the count
+        )
 }
 
 // nums is an array or a singleton
@@ -312,30 +316,30 @@ function quantise(number) {
 function showMilestone(state) {
     const time = timestamp()
     const label = getLabel(state)
-    const naturals = R.map(R.path(['value']))(getNaturals(state.universe))
+    const answers = R.map(R.path(['value']))(getAnswers(state.universe))
     const numberCount = Object.keys(state.universe).length
-    console.log(`Milestone [${label}]`, naturals)
-    console.log(time, label , 'Naturals', naturals.length, 'Total', numberCount)
+    console.log(`Milestone [${label}]`, answers)
+    console.log(time, label , 'Answers', answers.length, 'Total', numberCount)
     postMessage({
       snapshot: {
         time,
         label,
-        naturals,
-        naturalsCount: naturals.length,
+        answers,
+        answerCount: answers.length,
         numberCount
       }})
 }
 
 function showSnapshot(state, label = getLabel(state)) {
     const time = timestamp()
-    const naturalsCount = getNaturals(state.universe).length
+    const answerCount = getAnswers(state.universe).length
     const numberCount = Object.keys(state.universe).length
-    console.log(time, label , 'Naturals', naturalsCount, 'Total', numberCount)
+    console.log(time, label , 'Answers', answerCount, 'Total', numberCount)
     postMessage({
       snapshot: {
         time,
         label,
-        naturalsCount,
+        answerCount,
         numberCount
       }})
 }
@@ -349,28 +353,27 @@ function showMessage(message) {
 function showFormulas(universe, label) {
     const time = timestamp()
     const numberCount = Object.keys(universe).length
-    const naturals = getNaturals(universe)
+    const answers = getAnswers(universe)
     const formulaMap = {}
-    naturals.forEach(({value, formula}) => formulaMap[value] = formula)
+    answers.forEach(({value, formula}) => formulaMap[value] = formula)
 
-    console.log(time, label , 'Naturals', naturals.length, 'Total', numberCount)
+    console.log(time, label , 'Answers', answers.length, 'Total', numberCount)
     postMessage({
       snapshot: {
         time,
         label,
         formulaMap,
-        naturalsCount: naturals.length,
+        answerCount: answers.length,
         numberCount
       }})
 }
 
 function showDebug(universe, label) {
-    const sortedNaturals = getNaturals(universe)
+    const sortedAnswers = getAnswers(universe)
         .sort((a, b) => a.value - b.value)
-    console.log(timestamp(), label + '\n', sortedNaturals.map(num => num.value + ' = ' + num.formula).join('\n '))
-    console.log('(objects)', sortedNaturals)
-    console.log('(all)', Object.keys(universe)
-        .map(key => universe[key])
+    console.log(timestamp(), label + '\n', sortedAnswers.map(num => num.value + ' = ' + num.formula).join('\n '))
+    console.log('(objects)', sortedAnswers)
+    console.log('(all)', Object.values(universe)
         .map(num => num.value)
         .sort((a, b) => a - b))
 }
