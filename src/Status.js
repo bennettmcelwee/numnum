@@ -6,6 +6,7 @@ export default ({ state }) => (
         {state.settings &&
             <p>Making numbers with up to{' '}
                 {state.settings.countLimit} {state.settings.digit}s
+                (concatenation {state.settings.allowConcatenation ? '' : 'not '}allowed)
                 and symbols {state.settings.symbols.join(' ')}{' '}
                 for {state.settings.maxDurationSeconds} seconds
             </p>

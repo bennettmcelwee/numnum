@@ -28,9 +28,17 @@ export default class Controls extends React.Component {
           <div className="symbols group btn-group-toggle" data-toggle="buttons">
             {settings.allSymbols && settings.allSymbols.map(sym => {
                 const isChecked = settings.symbols && settings.symbols.includes(sym)
-                return (<label key={sym} className={'btn btn-outline-info' + (isChecked ? ' active' : '')}><input name={'symbol' + sym} type="checkbox" checked={isChecked} onChange={this.onChange}/> {sym}</label>)
+                return (<label key={sym} className={'btn btn-outline-info' + (isChecked ? ' active' : '')}>
+                    <input name={'symbol' + sym} type="checkbox" checked={isChecked} onChange={this.onChange}/> {sym}
+                  </label>)
               })
             }
+          </div>
+          <div className="group btn-group-toggle" data-toggle="buttons">
+            <label className={'btn btn-outline-info' + (settings.allowConcatenation ? ' active' : '')}>
+              <input name="allowConcatenation" type="checkbox" checked={Boolean(settings.allowConcatenation)} onChange={this.onChange}/>
+              Allow concatenation
+            </label>
           </div>
           <div className="group">
             <button onClick={this.props.start} className="btn btn-success">Start</button>
