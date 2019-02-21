@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "description": "",
   "keywords": [],
+  "license": "UNLICENSED",
+  "private": true,
   "main": "src/index.js",
   "dependencies": {
     "bootstrap": "4.1.3",
