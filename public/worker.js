@@ -217,15 +217,23 @@ function doRound(state) {
         let i = initial_i
         initial_i = 0
         for ( ; i < baseIdCount; ++i) {
-            const binaryResults = []
-            let j = initial_j
-            initial_j = 0
-            for ( ; j <= i; ++j) {
-                binaryResults.push(...R.flatten(applyOperators(global.settings.binaryOperators)(baseUniverse[baseIdList[i]], baseUniverse[baseIdList[j]])))
+            const iNum = baseUniverse[baseIdList[i]]
+            // Skip this number if its count is already at the limit (this cuts out 80-90% of all cases!)
+            if (iNum.count < global.settings.countLimit) {
+                const binaryResults = []
+                let j = initial_j
+                initial_j = 0
+                for ( ; j <= i; ++j) {
+                    const jNum = baseUniverse[baseIdList[j]]
+                    // Skip this pair if their combined count is already over the limit
+                    if (iNum.count + jNum.count <= global.settings.countLimit) {
+                        binaryResults.push(...R.flatten(applyOperators(global.settings.binaryOperators)(iNum, jNum)))
+                    }
+                }
+                addNumbers(universe, binaryResults)
+                lastMilestone.stage = {binary: {i, j, fraction: (i + 1) / baseIdCount}}
+                heartbeat(state)
             }
-            addNumbers(universe, binaryResults)
-            lastMilestone.stage = {binary: {i, j, fraction: (i + 1) / baseIdCount}}
-            heartbeat(state)
         }
         showMilestone(state)
     }
