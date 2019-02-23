@@ -274,18 +274,22 @@ function makeId(num) {
 
 // An "answer" is a number that qualifies as an answer to the search, i.e. is a positive integer with the right count
 function getAnswers(universe) {
-    return Object.values(universe)
+    const allAnswers = Object.values(universe)
         .filter(num =>
             0 < num.value && // positive
-            num.value === Math.trunc(num.value) // integer
+            num.value === Math.trunc(num.value) && // integer
+            num.count <= global.settings.countMax &&
+            num.count >= global.settings.countMin
         )
-        // .forEach(num => {
-        //         const answer = answers[num.value]
-        //         if (num.count >= globals.settings.countMin && num.count <= globals.settings.countMax)
-
-        //     })
-        //     // TODO optionally check the count
-        // )
+    // Get the best answer (lowest count) for each value
+    const bestAnswers = {}
+    allAnswers.forEach(num => {
+        const oldBest = bestAnswers[num.value]
+        if (!oldBest || num.count < oldBest.count) {
+            bestAnswers[num.value] = num
+        }
+    })
+    return Object.values(bestAnswers)
 }
 
 // nums is an array or a singleton
