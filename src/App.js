@@ -19,7 +19,7 @@ export default class App extends Component {
       messages: [],
       settings: {
         digit: 6,
-        countLimit: 5,
+        countMax: 5,
         symbols: ['+', '-', '×', '÷', '()', '.', '^', '!', '√'],
         maxDurationSeconds: 5,
       },

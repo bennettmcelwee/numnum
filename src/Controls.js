@@ -23,7 +23,7 @@ export default class Controls extends React.Component {
       <div className="controls">
           <h2>Settings</h2>
           <div className="group">Digit: <input name="digit" type="number" value={settings.digit} onChange={this.onChange}/></div>
-          <div className="group">Count: <input name="countLimit" type="number" value={settings.countLimit} onChange={this.onChange}/></div>
+          <div className="group">Count: <input name="countMax" type="number" value={settings.countMax} onChange={this.onChange}/></div>
           <div className="group">Seconds: <input name="maxDurationSeconds" type="number" value={settings.maxDurationSeconds} onChange={this.onChange}/></div>
           <div className="symbols group btn-group-toggle" data-toggle="buttons">
             {settings.allSymbols && settings.allSymbols.map(sym => {

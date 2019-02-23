@@ -4,8 +4,8 @@ export default ({ state }) => (
     <div className="status">
         <h2>Num, num</h2>
         {state.settings &&
-            <p>Making numbers with up to{' '}
-                {state.settings.countLimit} {state.settings.digit}s
+            <p>Making numbers with {state.settings.requireExactCount ? 'exactly' : 'up to'}{' '}
+                {state.settings.countMax} {state.settings.digit}s
                 (concatenation {state.settings.allowConcatenation ? '' : 'not '}allowed)
                 and symbols {state.settings.symbols.join(' ')}{' '}
                 for {state.settings.maxDurationSeconds} seconds

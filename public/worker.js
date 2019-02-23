@@ -22,7 +22,7 @@ if (typeof global === 'undefined') {
 const DEFAULT_SETTINGS = {
     // Parameters
     digit: 5,
-    countLimit: 4,
+    countMax: 4,
     symbols: ['+', '-', '×', '÷', '()'],
     allowConcatenation: true,
     // Display
@@ -114,6 +114,7 @@ function buildSettings(settings) {
     settings = {
         ...settings,
         allowParens: settings.symbols.includes('()'),
+        countMin: settings.requireExactCount ? settings.countMax : 1,
         heartbeatMs: settings.heartbeatSeconds * 1000,
         yieldMs: settings.yieldSeconds * 1000
     }
@@ -219,14 +220,14 @@ function doRound(state) {
         for ( ; i < baseIdCount; ++i) {
             const iNum = baseUniverse[baseIdList[i]]
             // Skip this number if its count is already at the limit (this cuts out 80-90% of all cases!)
-            if (iNum.count < global.settings.countLimit) {
+            if (iNum.count < global.settings.countMax) {
                 const binaryResults = []
                 let j = initial_j
                 initial_j = 0
                 for ( ; j <= i; ++j) {
                     const jNum = baseUniverse[baseIdList[j]]
                     // Skip this pair if their combined count is already over the limit
-                    if (iNum.count + jNum.count <= global.settings.countLimit) {
+                    if (iNum.count + jNum.count <= global.settings.countMax) {
                         binaryResults.push(...R.flatten(applyOperators(global.settings.binaryOperators)(iNum, jNum)))
                     }
                 }
@@ -264,7 +265,7 @@ function timestamp() {
 }
 
 function makeId(num) {
-    return Math.round(1e6 * num.value)
+    return Math.round(1e6 * num.value) + '-' + num.count
 }
 
 
@@ -277,8 +278,14 @@ function getAnswers(universe) {
         .filter(num =>
             0 < num.value && // positive
             num.value === Math.trunc(num.value) // integer
-            // TODO optionally check the count
         )
+        // .forEach(num => {
+        //         const answer = answers[num.value]
+        //         if (num.count >= globals.settings.countMin && num.count <= globals.settings.countMax)
+
+        //     })
+        //     // TODO optionally check the count
+        // )
 }
 
 // nums is an array or a singleton
@@ -290,7 +297,7 @@ function addNumbers(universe, nums) {
                 && (global.settings.allowFractions || num.value === Math.round(num.value))
                 && (global.settings.allowParens || ! num.formula.includes('('))
                 && num.value < global.settings.valueLimit && - global.settings.valueLimit <= num.value
-                && num.count <= global.settings.countLimit) {
+                && num.count <= global.settings.countMax) {
             const id = makeId(num)
             if (universe[id]) {
                 // replace complicated nums with simpler ones
