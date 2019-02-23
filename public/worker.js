@@ -264,7 +264,7 @@ function timestamp() {
 }
 
 function makeId(num) {
-    return Math.round(1e6 * (num.value === undefined ? num : num.value))
+    return Math.round(1e6 * num.value)
 }
 
 
