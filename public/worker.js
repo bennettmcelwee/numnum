@@ -319,6 +319,9 @@ function addNumbers(universe, nums) {
 const EPSILON = 1e-9
 
 function quantise(number) {
+    if (number == null) {
+        return null
+    }
     const integer = Math.round(number)
     const delta = Math.abs(number - integer)
     return (delta < EPSILON ? integer : number)
